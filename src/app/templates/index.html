@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>Finovault 📂</title></head>
+<body>
+  <h1>Fichiers disponibles</h1>
+  <ul>
+    {% for file in files %}
+      <li>{{ file }} <a href="/download/{{ file }}">Télécharger</a></li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
