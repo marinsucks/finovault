@@ -1,22 +1,33 @@
 NAME = finovault
 
-FINOVAULT_DATA = ./testdata
+DEFAULT_DIR = ./testdata
 
 all: build
-	@if [ "$(FINOVAULT_DATA)" = "tests/data" ]; then \
-		echo "$(YELLOW)Using default data directory: $(BYELLOW)$(FINOVAULT_DATA)$(RESET)"; \
-		echo "$(YELLOW)To use your own data directory, run:$(RESET)"; \
-		echo "$(BYELLOW)  make FINOVAULT_DATA=/yourdatahere$(RESET)"; \
-	fi
-	@docker run \
+	@if [ -z "$$FINOVAULT_DIR" ]; then \
+		echo "$(BRED)FINOVAULT_DIR$(RED) environment variable not set.$(RESET)"; \
+		export FINOVAULT_DIR=$(DEFAULT_DIR); \
+	fi; \
+	echo "$(YELLOW)Using directory: $(BYELLOW)$$(realpath $${FINOVAULT_DIR})$(RESET)"; \
+	docker run --rm -d \
 		-p 5000:5000 \
-    	-v $(FINOVAULT_DATA):/data \
-    	finovault
+		-v $$(realpath $${FINOVAULT_DIR}):/data \
+		-e DIR_NAME=$$(realpath $${FINOVAULT_DIR}) \
+		--name finovault \
+		finovault
+	@echo "$(BGREEN)$(NAME) is running!$(GREEN) Access it at $(BGREEN)http://localhost:5000$(GREEN) or stop it with $(BGREEN)make stop$(RESET)"
+
+stop:
+	@echo "$(RED)Stopping $(BRED)$(NAME)$(RED)...$(RESET)"
+	@docker stop $(shell docker ps -q --filter ancestor=$(NAME)) || true
+	@docker rm -f $(shell docker ps -aq --filter ancestor=$(NAME)) || true
 
 build:
-	@echo "$(GREEN)Building $(BGREEN)$(NAME)$(GREEN)...$(RESET)"
+	@echo "$(YELLOW)Building $(BYELLOW)$(NAME)$(YELLOW)...$(RESET)"
 	@docker build -t $(NAME) .
 
+re: stop all
+
+.PHONY: all stop build re
 
 # COLORS
 RED = \033[0;31m
