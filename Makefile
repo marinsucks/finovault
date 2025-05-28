@@ -18,7 +18,10 @@ all: build
 		-e DIR_NAME=$$(realpath $${FINOVAULT_DIR}) \
 		--name finovault \
 		finovault
-	@echo "$(BGREEN)$(NAME) is running!$(GREEN) Access it at $(BGREEN)http://localhost:5000$(GREEN) or stop it with $(BGREEN)make stop$(RESET)"
+	@echo "$(BGREEN)$(NAME) is running!$(RESET)"
+	@echo "$(GREEN)access:	$(BGREEN)http://localhost:5000$(GREEN)$(RESET)"
+	@echo "$(YELLOW)tests:	$(BYELLOW)make tests$(RESET)"
+	@echo "$(RED)stop:	$(BRED)make stop$(RESET)"
 
 build:
 	@echo "$(YELLOW)Building $(BYELLOW)$(NAME)$(YELLOW)...$(RESET)"
@@ -30,8 +33,7 @@ stop:
 	@docker rm -f $(shell docker ps -aq --filter ancestor=$(NAME)) || true
 
 tests:
-	@docker exec finovault pytest /tests/tests.py
-
+	@docker exec -e PYTHONPATH=/src -e PATH="/home/flaskuser/.local/bin:${PATH}" finovault pytest /tests/tests.py -v --color=yes
 
 re: stop all
 

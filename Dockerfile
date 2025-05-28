@@ -1,11 +1,17 @@
 FROM python:3.11-slim
 
-WORKDIR /app
+RUN adduser --disabled-password --gecos '' flaskuser
 
-COPY src /app
+WORKDIR /src
+
+COPY src /src
 COPY tests /tests
 
-RUN pip install --no-cache-dir -r /app/requirements.txt -r /tests/requirements.txt
+RUN mkdir /tests/.pytest_cache && \
+	chown -R flaskuser:flaskuser /tests
+USER flaskuser
+
+RUN pip install --no-cache-dir -r /src/requirements.txt -r /tests/requirements.txt
 
 ENV DIR_PATH=/data
 

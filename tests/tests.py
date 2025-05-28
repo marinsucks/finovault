@@ -3,8 +3,8 @@ import tempfile
 import shutil
 import pytest
 from flask import Flask
-#!from app.utils import build_tree
-#!from app import create_app
+from app.utils import build_tree
+from app import create_app
 
 
 
