@@ -2,10 +2,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY src /app
+COPY tests /tests
+
+RUN pip install --no-cache-dir -r /app/requirements.txt -r /tests/requirements.txt
 
 ENV DIR_PATH=/data
 

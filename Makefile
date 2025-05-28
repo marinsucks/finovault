@@ -1,13 +1,17 @@
 NAME = finovault
 
-DEFAULT_DIR = ./testdata
+DEFAULT_DIR = ./tests/files
 
 all: build
 	@if [ -z "$$FINOVAULT_DIR" ]; then \
 		echo "$(BRED)FINOVAULT_DIR$(RED) environment variable not set.$(RESET)"; \
 		export FINOVAULT_DIR=$(DEFAULT_DIR); \
 	fi; \
-	echo "$(YELLOW)Using directory: $(BYELLOW)$$(realpath $${FINOVAULT_DIR})$(RESET)"; \
+	echo "$(YELLOW)Using directory: $(BYELLOW)$${FINOVAULT_DIR}$(RESET)"; \
+	test -d "$${FINOVAULT_DIR}" || { \
+		echo "$(RED)Directory $(BRED)$${FINOVAULT_DIR}$(RED) does not exist.$(RESET)"; \
+		exit 1; \
+	}; \
 	docker run --rm -d \
 		-p 5000:5000 \
 		-v $$(realpath $${FINOVAULT_DIR}):/data \
@@ -16,18 +20,22 @@ all: build
 		finovault
 	@echo "$(BGREEN)$(NAME) is running!$(GREEN) Access it at $(BGREEN)http://localhost:5000$(GREEN) or stop it with $(BGREEN)make stop$(RESET)"
 
+build:
+	@echo "$(YELLOW)Building $(BYELLOW)$(NAME)$(YELLOW)...$(RESET)"
+	@docker build -t $(NAME) .
+
 stop:
 	@echo "$(RED)Stopping $(BRED)$(NAME)$(RED)...$(RESET)"
 	@docker stop $(shell docker ps -q --filter ancestor=$(NAME)) || true
 	@docker rm -f $(shell docker ps -aq --filter ancestor=$(NAME)) || true
 
-build:
-	@echo "$(YELLOW)Building $(BYELLOW)$(NAME)$(YELLOW)...$(RESET)"
-	@docker build -t $(NAME) .
+tests:
+	@docker exec finovault pytest /tests/tests.py
+
 
 re: stop all
 
-.PHONY: all stop build re
+.PHONY: all build stop tests re
 
 # COLORS
 RED = \033[0;31m
