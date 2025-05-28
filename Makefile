@@ -12,7 +12,7 @@ all: build
 		echo "$(RED)Directory $(BRED)$${FINOVAULT_DIR}$(RED) does not exist.$(RESET)"; \
 		exit 1; \
 	}; \
-	docker run --rm -d \
+	docker run -d \
 		-p 5000:5000 \
 		-v $$(realpath $${FINOVAULT_DIR}):/data \
 		-e DIR_NAME=$$(realpath $${FINOVAULT_DIR}) \
