@@ -26,7 +26,7 @@ It is designed for easy deployment and sharing of files in a controlled environm
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/finovault.git
+git clone https://github.com/marinsucks/finovault.git
 cd finovault
 ```
 
