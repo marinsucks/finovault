@@ -12,6 +12,9 @@ all: build
 		echo "$(RED)Directory $(BRED)$${FINOVAULT_DIR}$(RED) does not exist.$(RESET)"; \
 		exit 1; \
 	}; \
+	if ! find "$${FINOVAULT_DIR}" ! -readable -print 2>/dev/null | grep . >/dev/null; then :; else \
+		echo "$(RED)Warning: Some files or directories in $(BRED)$${FINOVAULT_DIR}$(RED) are not readable. Please ensure read permissions for downloading.$(RESET)"; \
+	fi; \
 	docker run -d \
 		-p 5000:5000 \
 		-v $$(realpath $${FINOVAULT_DIR}):/data \
